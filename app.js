@@ -4,12 +4,30 @@ const e = React.createElement;
 class RfsRequest extends React.Component {
     constructor(props) {
         super(props);
+        this.state = {symbol: props.symbol, requestId: props.requestId, legs : []};
+        this.requestSend = this.requestSend.bind(this);
+        this.handleChangeField = this.handleChangeField.bind(this);
+        this.setLegs = this.setLegs.bind(this);
+    }
+
+    requestSend(event) {
+      event.preventDefault();
+    }
+
+    handleChangeField(event, fieldName) {
+      let newValue = event.target.value;
+      let current = this.state;
+      current[fieldName] = newValue;
+      this.setState(current);
+    }
+
+    setLegs(legs) {
+
     }
 
     render() {
-        // return e('div', {className: 'request-rfs'}, 
-        //         e('label', {htmlFor:'symbol'}, 'symbol'),
-        //         e('input', {type: 'text', id: 'symbol', name: 'symbol'}));
+      console.log(this.state);
+      let changeField = (fieldName) => (e) => { this.handleChangeField(e, fieldName)};
         data = {tableName: 'Batch Legs', 
                 cols: ['legRefID', 'tenor', 'valueDate', 'fixingDate', 'qty', 'side', 'account'], 
                 rowKey: (leg) => leg.legRefID, 
@@ -17,9 +35,11 @@ class RfsRequest extends React.Component {
         
         return e('fieldset', {}, 
                 e('legend', {}, 'Rfs Request'),
-                LabelText({name: 'Symbol:', value: this.props.symbol}),
-                LabelText({name: 'ReqId:', value: this.props.requestId}),
-                e(MutableTable, data));        
+                e(MutableTable, data),
+                e('div', {className: 'send-request'}, 
+                LabelText({name: 'Symbol:', onChange: changeField('symbol'), value: this.state.symbol}),
+                LabelText({name: 'ReqId:', onChange: changeField('requestId'), value: this.state.requestId}),
+                e('input', {type: 'submit', value : 'send request', onClick: this.requestSend})));        
     }
 }
 
@@ -27,49 +47,63 @@ class MutableTable extends React.Component {
   constructor(props) {
     super(props);
     this.state = {rows:this.props.data}
+    this.addRow = this.addRow.bind(this);
+    this.clear = this.clear.bind(this);
   }
 
+  clear(event) {
+    this.setState({rows: []});
+
+  }
+
+  addRow(r) {
+    let rows = this.state.rows;
+    rows.push(r);
+    this.setState({rows: rows});
+  }
   render() {
     let tableProps = {cols: this.props.cols, rowKey: this.props.rowKey, data: this.state.rows};
     
-    return e('fieldset', {}, 
+    return e('fieldset', null, 
       e('legend', {}, this.props.tableName),
-      e(MutableRow, {cols: tableProps.cols}),
-        Table(tableProps));
+      e(MutableRow, {cols: tableProps.cols, addRow: this.addRow}),
+        Table(tableProps),
+        e('input', {onClick :this.clear, type: 'submit', value: 'clear'}));
   }
 }
 
 class MutableRow extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {};
     this.handleAdd = this.handleAdd.bind(this);
-    this.handleChangeLegField = this.handleChangeLegField.bind(this);
+    this.handleChangeLegField = this.handleChangeField.bind(this);
+    this.state = {};
 }
 
 handleAdd(event) {
+  
+  let row = this.state;
+  this.props.addRow(row);
+  console.log(this.state);
+  this.setState({});
+  console.log(this.state);
   event.preventDefault();
 }
 
-handleChangeLegField(event, fieldName) {
+handleChangeField(event, fieldName) {
     let newValue = event.target.value;
     let current = this.state;
     current[fieldName] = newValue;
-    this.setState(current)
-    console.log(this.state);
-    
-
+    this.setState(current);
 }
 
   render() {
-    let changeField = (fieldName) => (e) => { this.handleChangeLegField(e, fieldName)};
+    let changeField = (fieldName) => (e) => { this.handleChangeField(e, fieldName)};
    
     let mutableFields = this.props.cols.map(c => LabelText({key: c, name: c, onChange: changeField(c), value: this.state[c]}))
-    return e('fieldset', null, 
-           e('legend', null, 'add leg'),
-            e('form', {onSubmit: this.handleAdd}, 
+    return  e('div', {className: 'mutable-row'}, 
               mutableFields,
-              e('input', {type: 'submit', value: 'add leg'})));
+              e('input', {type: 'submit', onClick: this.handleAdd, value: 'add leg'}));
   }
 }
 function LabelText(props) {
@@ -78,7 +112,6 @@ function LabelText(props) {
     let key = props.key == null ? props.name : props.key;
     let readOnly = (props.onChange == null) ? true : false;
     let onTxtChange = readOnly ? (e) => {} : props.onChange;
-    console.log('key for ' + props.name + ' is = ' + key);
     var inputElement = null;
     if(readOnly) {
       inputElement = e('input', { type: 'text', readOnly: true, id: name, name: name, value: value});
