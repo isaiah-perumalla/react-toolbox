@@ -192,11 +192,21 @@ document.querySelectorAll('.like_button_container')
     );
   });
   let data = {
-              symbol: 'GBP/USD',
+              symbol_: 'GBP/USD',
+              requestId_: 'test-1',
+              symbol_1_: 'JPY/USD',
+              requestId_1_: 'test-1',
+              symbol_2_: 'GBP/EUR',
+              requestId_2_: 'test-1dfaf',
+              executionId_: 'ewrwer',
+              quoteId_: 'fsdfafa',
+              transactTime_: 'fasdfadf',
+              
               requestId: 'test-1',
+              symbol: 'GBP/USD',
               symbol_1: 'JPY/USD',
-              requestId_1: 'test-1',
               symbol_2: 'GBP/EUR',
+              requestId_1: 'test-1',
               requestId_2: 'test-1dfaf',
               executionId: 'ewrwer',
               quoteId: 'fsdfafa',
