@@ -4,97 +4,45 @@
     <meta charset="UTF-8" />
     <link rel="preconnect" href="https://fonts.gstatic.com">
 <link href="https://fonts.googleapis.com/css2?family=B612&display=swap" rel="stylesheet">
-    <style>
-      body {
-        font-family: 'B612', sans-serif;
-      }
-table {
-  font-family: 'B612', sans-serif;
-}
-
-caption {
-  text-align: left;
-  color: silver;
-  font-weight: bold;
-  text-transform: uppercase;
-  padding: 5px;
-}
-
-thead {
-  background: SteelBlue;
-  color: white;
-}
-
-th,
-td {
-  padding: 5px 10px;
-}
-
-tbody tr:nth-child(even) {
-  background: WhiteSmoke;
-}
-
-tbody tr td:nth-child(2) {
-  text-align:center;
-}
-
-tbody tr td:nth-child(3),
-tbody tr td:nth-child(4) {
-  text-align: right;
-  font-family: monospace;
-}
-
-tfoot {
-  background: SeaGreen;
-  color: white;
-  text-align: right;
-}
-
-tfoot tr th:last-child {
-  font-family: monospace;
-}
+<style>
+    .container {
+      display: grid;
+      grid-template-columns: 50% 50%;
+      grid-gap: 10px;
+     
+    }
+    .container > section {
+      border-bottom: 1px solid black;
+      border-right: 1px solid black;
+    }
     
-fieldset {
-  padding: 1em;
-  font:100%/1 sans-serif;
-  }
-label {
-  float:left;
-  width:25%;
-  margin-right:0.5em;
-  padding-top:0.2em;
-  text-align:right;
-  font-weight:bold;
-  }
-  
-fieldset { border:1px solid green }
+   dl {
+     display: flex;
+     flex-wrap: wrap;
+   } 
+   dt {
+     background: #999;
+     text-transform: capitalize;
+     border:  1px solid #000;;
+     color: white;
+   }
+   dd {
+    
+     margin-inline-start: 0;
+     border:  1px solid #000;;
+     margin: 2px;
+     padding: 2px;
+   }
 
-legend {
-  padding: 0.2em 0.5em;
-  border:1px solid green;
-  color:green;
-  font-size:90%;
-  text-align:right;
-  }
-  
-.mutable-row {
-  display: inline-grid;
-  
-}
-.send-request {
-  display: flex;
-}
-.label-text {
-  display: flex;
-  
-}
+</style>
 
     </style>
     <title>Batch RFS Test</title>
+    
   </head>
   <body>
 
-    <div id="request"></div>
+    <div id="request" class="container"></div>
 
     <!-- Load React. -->
     <!-- Note: when deploying, replace "development.js" with "production.min.js". -->

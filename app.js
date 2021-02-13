@@ -106,6 +106,36 @@ handleChangeField(event, fieldName) {
               e('input', {type: 'submit', onClick: this.handleAdd, value: 'add leg'}));
   }
 }
+
+function filterObj(obj, predicate) {
+  return Object.entries(obj).reduce((acc, [k,v]) => {
+    if(predicate(k,v)) {
+      acc[k] = v;
+    }
+    return acc;
+  }, {});
+}
+function Describe(d) {
+  
+  function toHtml(data, level=0) {
+    
+      let className = `level_${level}`;
+      if(Array.isArray(data)) {
+        return e('ol', {className: className}, data.map((item,i) => e('li', {key: `${i}_${Date.now()}`}, toHtml(item, level+1))))
+      }
+      if((typeof data) === 'object') {
+      return  e('dl', {className: className}, 
+                  Object.entries(data).flatMap(([k,v]) => {
+                    let vKey = `${k}_${v}`;
+                      return e('div', null, e('dt', {key: k, className: className}, k), e('dd', {key: vKey}, toHtml(v, level+1)));
+      } ));
+    }
+    return data;
+  }
+  
+  return [toHtml(filterObj(d, (k,v) => (typeof v) != 'object')), toHtml(filterObj(d, (k,v) => (typeof v) == 'object'), 1)];
+}
+
 function LabelText(props) {
     let name = props.name;
     let value = props.value;
@@ -149,24 +179,7 @@ function Table(props) {
               e('tbody', {}, tableRows));    
 }
 
-class LikeButton extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { liked: false };
-  }
 
-  render() {
-    if (this.state.liked) {
-      return 'You liked comment number ' + this.props.commentID;
-    }
-
-    return e(
-      'button',
-      { onClick: () => this.setState({ liked: true }) },
-      'Like'
-    );
-  }
-}
 
 // Find all DOM containers, and render Like buttons into them.
 document.querySelectorAll('.like_button_container')
@@ -181,10 +194,35 @@ document.querySelectorAll('.like_button_container')
   let data = {
               symbol: 'GBP/USD',
               requestId: 'test-1',
+              symbol_1: 'JPY/USD',
+              requestId_1: 'test-1',
+              symbol_2: 'GBP/EUR',
+              requestId_2: 'test-1dfaf',
+              executionId: 'ewrwer',
+              quoteId: 'fsdfafa',
+              transactTime: 'fasdfadf',
               legs: [ 
-                      { legRefID : 'leg-12-abc', tenor: '1M', qty: 1000.50, side: 'buy'},
-                      { legRefID : 'leg-200-ff', tenor: '2M', qty: 5999.50, side: 'sell'},
-                    ]
+                      { legRefID : 'leg-12-abc', tenor: '1M', qty: 1000.50, side: 'buy', valueDate: '20201215',
+                        allocations: [
+                          {allocId: 'alloc1', qty:5000, account: 'fafda'},
+                          {allocId: 'alloc2', qty:10000, account: 'account-3'},
+                      ]},
+                      { legRefID : 'leg-200-ff', tenor: '2M', qty: 5999.50, side: 'sell',
+                      allocations: [
+                        {allocId: 'alloc1', qty:5000, account: 'fafda'},
+                        {allocId: 'alloc2', qty:10000, account: 'account-3'}]},
+                      { legRefID : 'leg-12dfadfa', tenor: '3MM', qty: 9999.50, side: 'Sell',valueDate: '20201215'},
+                      { legRefID : 'leg-400', tenor: '6MM', qty: 8999.50, side: 'sell',valueDate: '20201215'}
+                    ],
+              parties: [
+                { partyId : 'leg-1abc', partyRole: '1FDSDDSFSM', partyType: 1000.50, partyClassifier: 'buy'},
+                { partyId : 'leg-12-abc', partyRole: '1M', partyType: 1000.50, partyClassifier: 'buDFSDFSDFy'},
+                { partyId : 'leg-12-abc', partyRole: '1M', partyType: 1000.50, partyClassifier: 'buy'},
+                { partyId : 'leg-12-ADSASDASDabc', partyRole: '1M', partyType: 1000.50, partyClassifier: 'buy'},
+              ]
     }
   ReactDOM.render(
-      e(RfsRequest, data), document.getElementById('request'));
+      [
+        e('section', null, e('h1', null, 'Details-1'), e(Describe, data)), 
+        e('section', null, e('h1', null, 'Details-2'), e(Describe, data))], 
+          document.getElementById('request'));
